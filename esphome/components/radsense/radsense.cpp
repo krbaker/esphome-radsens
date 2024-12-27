@@ -20,6 +20,28 @@ static const uint8_t RADSENSE_REGISTER_CONTROL_SENSITIVITY = 0x12; // 16bit
 static const uint8_t RADSENSE_REGISTER_CONTROL_LED = 0x14;  // 8bit
 static const uint8_t RADSENSE_REGISTER_CONTROL_LOW_POWER_MODE = 0x0C; ///8bit
 
+void RadSenseComponent::set_control(uint8_t reg, uint8_t val){
+  if (!this->write_byte(reg, val)){
+    ESP_LOGCONFIG(TAG, "RadSense Write: failed writing control register %u", reg);
+    this->error_code_ = COMMUNICATION_FAILED;
+    this->mark_failed();
+    return;    
+  }
+
+}
+
+void RadSenseComponent::set_high_voltage(bool enable){
+  set_control(RADSENSE_REGISTER_CONTROL_HIGH_VOLTAGE_GENERATOR, enable);
+}
+
+void RadSenseComponent::set_led(bool enable){
+  set_control(RADSENSE_REGISTER_CONTROL_LED, enable);
+}
+
+void RadSenseComponent::set_low_power(bool enable){
+  set_control(RADSENSE_REGISTER_CONTROL_LOW_POWER_MODE, enable);
+}
+
 void RadSenseComponent::setup() {
   ESP_LOGCONFIG(TAG, "RadSense Setup: starting...");
   uint8_t id;
@@ -61,7 +83,7 @@ void RadSenseComponent::setup() {
   // This number is little endian oddly, convert if needed
   old_sensitivity.u16 = convert_little_endian(old_sensitivity.u16); // No-Op on esp32
   ESP_LOGCONFIG(TAG, "RadSense setup: sensitivity is %u", old_sensitivity.u16);
-  if (old_sensitivity.u16 != this->sensitivity_){
+  if (this->sensitivity_ != 0 && old_sensitivity.u16 != this->sensitivity_){
     ESP_LOGCONFIG(TAG, "RadSense setup: sensitivity setting to %u", this->sensitivity_);
     Uint16 sensitivity_to_send;
     sensitivity_to_send.u16 = convert_little_endian(this->sensitivity_);
