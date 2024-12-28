@@ -20,9 +20,9 @@ from .const import (
     CONF_FIRMWARE_VERSION
 )
 
-from . import CONF_RADSENSE_ID, RadSenseComponent
+from . import CONF_RADSENS_ID, RadSensComponent
 
-DEPENDENCIES = ["radsense"]
+DEPENDENCIES = ["radsens"]
 
 intensity_schema = sensor.sensor_schema(
     unit_of_measurement=UNIT_MICROROENTGEN_PER_HOUR,
@@ -50,7 +50,7 @@ firmware_version_schema = sensor.sensor_schema(
 CONFIG_SCHEMA = (
     cv.Schema(
         {
-            cv.GenerateID(CONF_RADSENSE_ID): cv.use_id(RadSenseComponent),
+            cv.GenerateID(CONF_RADSENS_ID): cv.use_id(RadSensComponent),
             cv.Optional(CONF_DYNAMIC_INTENSITY): intensity_schema,
             cv.Optional(CONF_STATIC_INTENSITY): intensity_schema,
             cv.Optional(CONF_COUNTS_PER_MINUTE): counts_per_minute_schema,
@@ -60,7 +60,7 @@ CONFIG_SCHEMA = (
 )
 
 async def to_code(config):
-    var = await cg.get_variable(config[CONF_RADSENSE_ID])
+    var = await cg.get_variable(config[CONF_RADSENS_ID])
     if CONF_DYNAMIC_INTENSITY in config:
         sens = await sensor.new_sensor(config[CONF_DYNAMIC_INTENSITY])
         cg.add(var.set_dynamic_intensity_sensor(sens))
