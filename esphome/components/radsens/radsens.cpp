@@ -9,6 +9,7 @@
 #include "switch/low_power_control.h"
 #include "switch/led_control.h"
 #endif
+
 namespace esphome {
 namespace radsens {
 

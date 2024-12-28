@@ -6,6 +6,7 @@
 #ifdef USE_SWITCH
 #include "esphome/components/switch/switch.h"
 #endif
+
 namespace esphome {
 namespace radsens {
 
