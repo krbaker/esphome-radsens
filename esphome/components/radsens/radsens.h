@@ -6,7 +6,7 @@
 #include "esphome/components/i2c/i2c.h"
 
 namespace esphome {
-namespace radsense {
+namespace radsens {
 
 union Uint32
 {
@@ -21,7 +21,7 @@ union Uint16
 };
 
 
-class RadSenseComponent : public PollingComponent, public i2c::I2CDevice {
+class RadSensComponent : public PollingComponent, public i2c::I2CDevice {
 #ifdef USE_SWITCH
  SUB_SWITCH(control_led)
  SUB_SWITCH(control_high_voltage)
@@ -61,5 +61,5 @@ class RadSenseComponent : public PollingComponent, public i2c::I2CDevice {
 
 };
 
-}  // namespace radsense
+}  // namespace radsens
 }  // namespace esphome

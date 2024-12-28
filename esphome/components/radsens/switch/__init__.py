@@ -15,11 +15,11 @@ from ..const import (
     CONF_CONTROL_LOW_POWER
 )
 
-from .. import CONF_RADSENSE_ID, RadSenseComponent, radsense_ns
+from .. import CONF_RADSENS_ID, RadSensComponent, radsens_ns
 
-LedControl = radsense_ns.class_("LedControl", switch.Switch)
-HighVoltageControl = radsense_ns.class_("HighVoltageControl", switch.Switch)
-LowPowerControl = radsense_ns.class_("LowPowerControl", switch.Switch)
+LedControl = radsens_ns.class_("LedControl", switch.Switch)
+HighVoltageControl = radsens_ns.class_("HighVoltageControl", switch.Switch)
+LowPowerControl = radsens_ns.class_("LowPowerControl", switch.Switch)
 
 control_low_power_schema = switch.switch_schema(
     LowPowerControl,
@@ -46,7 +46,7 @@ control_led_schema = switch.switch_schema(
 CONFIG_SCHEMA = (
     cv.Schema(
         {
-            cv.GenerateID(CONF_RADSENSE_ID): cv.use_id(RadSenseComponent),
+            cv.GenerateID(CONF_RADSENS_ID): cv.use_id(RadSensComponent),
             cv.Optional(CONF_CONTROL_LED): control_led_schema,
             cv.Optional(CONF_CONTROL_HIGH_VOLTAGE): control_high_voltage_schema,
             cv.Optional(CONF_CONTROL_LOW_POWER): control_low_power_schema,
@@ -55,16 +55,16 @@ CONFIG_SCHEMA = (
 )
 
 async def to_code(config):
-    var = await cg.get_variable(config[CONF_RADSENSE_ID])
+    var = await cg.get_variable(config[CONF_RADSENS_ID])
     if CONF_CONTROL_LED in config:
         sw = await switch.new_switch(config[CONF_CONTROL_LED])
-        await cg.register_parented(sw, config[CONF_RADSENSE_ID])
+        await cg.register_parented(sw, config[CONF_RADSENS_ID])
         cg.add(var.set_control_led_switch(sw))
     if CONF_CONTROL_HIGH_VOLTAGE in config:
         sw = await switch.new_switch(config[CONF_CONTROL_HIGH_VOLTAGE])
-        await cg.register_parented(sw, config[CONF_RADSENSE_ID])
+        await cg.register_parented(sw, config[CONF_RADSENS_ID])
         cg.add(var.set_control_high_voltage_switch(sw))
     if CONF_CONTROL_LOW_POWER in config:
         sw = await switch.new_switch(config[CONF_CONTROL_LOW_POWER])
-        await cg.register_parented(sw, config[CONF_RADSENSE_ID])
+        await cg.register_parented(sw, config[CONF_RADSENS_ID])
         cg.add(var.set_control_low_power_switch(sw))
