@@ -2,8 +2,10 @@
 
 #include "esphome/core/component.h"
 #include "esphome/components/sensor/sensor.h"
-#include "esphome/components/switch/switch.h"
 #include "esphome/components/i2c/i2c.h"
+#ifdef USE_SWITCH
+#include "esphome/components/switch/switch.h"
+#endif
 
 namespace esphome {
 namespace radsens {
@@ -42,9 +44,13 @@ class RadSensComponent : public PollingComponent, public i2c::I2CDevice {
   void set_high_voltage(bool enable);
   void set_led(bool enable);
   void set_low_power(bool enable);
+  bool get_high_voltage();
+  bool get_led();
+  bool get_low_power();
 
  protected:
   void set_control(uint8_t reg, uint8_t val);
+  bool get_control(uint8_t reg);
   sensor::Sensor *dynamic_intensity_sensor_{nullptr};
   sensor::Sensor *static_intensity_sensor_{nullptr};
   sensor::Sensor *counts_per_minute_sensor_{nullptr};
