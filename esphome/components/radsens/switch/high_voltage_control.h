@@ -1,12 +1,12 @@
 #pragma once
 
 #include "esphome/components/switch/switch.h"
-#include "../radsense.h"
+#include "../radsens.h"
 
 namespace esphome {
-namespace radsense {
+namespace radsens {
 
-class HighVoltageControl : public switch_::Switch, public Parented<RadSenseComponent> {
+class HighVoltageControl : public switch_::Switch, public Parented<RadSensComponent> {
  public:
   HighVoltageControl() = default;
 
@@ -14,5 +14,5 @@ class HighVoltageControl : public switch_::Switch, public Parented<RadSenseCompo
   void write_state(bool state) override;
 };
 
-}  // namespace radsense
+}  // namespace radsens
 }  // namespace esphome

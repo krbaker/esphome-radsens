@@ -1,28 +1,28 @@
-#include "radsense.h"
+#include "radsens.h"
 #include "esphome/core/log.h"
 #include "esphome/core/application.h"
 #include "esphome/core/datatypes.h"
 #include "esphome/core/helpers.h"
 namespace esphome {
-namespace radsense {
+namespace radsens {
 
-static const char *const TAG = "radsense";
-static const uint8_t RADSENSE_DEVICE_ID = 0x7D;
-static const uint8_t RADSENSE_ADDRESS = 0x66;
-static const uint8_t RADSENSE_REGISTER_IDENTIFICATION = 0x00; // 8 bit
-static const uint8_t RADSENSE_REGISTER_IDENTIFICATION_FIRMWARE_VERSION = 0x01; // 8bit
-static const uint8_t RADSENSE_REGISTER_DATA_DYNAMIC_INTENSITY = 0x03; // 24bit
-static const uint8_t RADSENSE_REGISTER_DATA_STATIC_INTENSITY = 0x06; // 24bit
-static const uint8_t RADSENSE_REGISTER_DATA_PULSE_COUNTER= 0x09; // 16bit
-static const uint8_t RADSENSE_REGISTER_CONTROL_DEVICE_ADDRESS = 0x10; // 8bit
-static const uint8_t RADSENSE_REGISTER_CONTROL_HIGH_VOLTAGE_GENERATOR = 0x11; // 8bit
-static const uint8_t RADSENSE_REGISTER_CONTROL_SENSITIVITY = 0x12; // 16bit
-static const uint8_t RADSENSE_REGISTER_CONTROL_LED = 0x14;  // 8bit
-static const uint8_t RADSENSE_REGISTER_CONTROL_LOW_POWER_MODE = 0x0C; ///8bit
+static const char *const TAG = "radsens";
+static const uint8_t RADSENS_DEVICE_ID = 0x7D;
+static const uint8_t RADSENS_ADDRESS = 0x66;
+static const uint8_t RADSENS_REGISTER_IDENTIFICATION = 0x00; // 8 bit
+static const uint8_t RADSENS_REGISTER_IDENTIFICATION_FIRMWARE_VERSION = 0x01; // 8bit
+static const uint8_t RADSENS_REGISTER_DATA_DYNAMIC_INTENSITY = 0x03; // 24bit
+static const uint8_t RADSENS_REGISTER_DATA_STATIC_INTENSITY = 0x06; // 24bit
+static const uint8_t RADSENS_REGISTER_DATA_PULSE_COUNTER= 0x09; // 16bit
+static const uint8_t RADSENS_REGISTER_CONTROL_DEVICE_ADDRESS = 0x10; // 8bit
+static const uint8_t RADSENS_REGISTER_CONTROL_HIGH_VOLTAGE_GENERATOR = 0x11; // 8bit
+static const uint8_t RADSENS_REGISTER_CONTROL_SENSITIVITY = 0x12; // 16bit
+static const uint8_t RADSENS_REGISTER_CONTROL_LED = 0x14;  // 8bit
+static const uint8_t RADSENS_REGISTER_CONTROL_LOW_POWER_MODE = 0x0C; ///8bit
 
-void RadSenseComponent::set_control(uint8_t reg, uint8_t val){
+void RadSensComponent::set_control(uint8_t reg, uint8_t val){
   if (!this->write_byte(reg, val)){
-    ESP_LOGCONFIG(TAG, "RadSense Write: failed writing control register %u", reg);
+    ESP_LOGCONFIG(TAG, "RadSens Write: failed writing control register %u", reg);
     this->error_code_ = COMMUNICATION_FAILED;
     this->mark_failed();
     return;    
@@ -30,37 +30,37 @@ void RadSenseComponent::set_control(uint8_t reg, uint8_t val){
 
 }
 
-void RadSenseComponent::set_high_voltage(bool enable){
-  set_control(RADSENSE_REGISTER_CONTROL_HIGH_VOLTAGE_GENERATOR, enable);
+void RadSensComponent::set_high_voltage(bool enable){
+  set_control(RADSENS_REGISTER_CONTROL_HIGH_VOLTAGE_GENERATOR, enable);
 }
 
-void RadSenseComponent::set_led(bool enable){
-  set_control(RADSENSE_REGISTER_CONTROL_LED, enable);
+void RadSensComponent::set_led(bool enable){
+  set_control(RADSENS_REGISTER_CONTROL_LED, enable);
 }
 
-void RadSenseComponent::set_low_power(bool enable){
-  set_control(RADSENSE_REGISTER_CONTROL_LOW_POWER_MODE, enable);
+void RadSensComponent::set_low_power(bool enable){
+  set_control(RADSENS_REGISTER_CONTROL_LOW_POWER_MODE, enable);
 }
 
-void RadSenseComponent::setup() {
-  ESP_LOGCONFIG(TAG, "RadSense Setup: starting...");
+void RadSensComponent::setup() {
+  ESP_LOGCONFIG(TAG, "RadSens Setup: starting...");
   uint8_t id;
-  if (!this->read_byte(RADSENSE_REGISTER_IDENTIFICATION, &id)) {
-    ESP_LOGCONFIG(TAG, "RadSense Setup: failed reading id");
+  if (!this->read_byte(RADSENS_REGISTER_IDENTIFICATION, &id)) {
+    ESP_LOGCONFIG(TAG, "RadSens Setup: failed reading id");
     this->error_code_ = COMMUNICATION_FAILED;
     this->mark_failed();
     return;
   }
 
-  if (id != RADSENSE_DEVICE_ID) {
-    ESP_LOGCONFIG(TAG, "RadSense Setup: id wrong %u != %u", id, RADSENSE_DEVICE_ID);
+  if (id != RADSENS_DEVICE_ID) {
+    ESP_LOGCONFIG(TAG, "RadSens Setup: id wrong %u != %u", id, RADSENS_DEVICE_ID);
     this->error_code_ = ID_REGISTERS;
     this->mark_failed();
     return;
   }
 
-  if (!this->read_byte(RADSENSE_REGISTER_IDENTIFICATION_FIRMWARE_VERSION, &this->firmware_version)) {
-    ESP_LOGCONFIG(TAG, "RadSense Setup: failed reading firmware version");
+  if (!this->read_byte(RADSENS_REGISTER_IDENTIFICATION_FIRMWARE_VERSION, &this->firmware_version)) {
+    ESP_LOGCONFIG(TAG, "RadSens Setup: failed reading firmware version");
     this->error_code_ = COMMUNICATION_FAILED;
     this->mark_failed();
     return;
@@ -74,38 +74,38 @@ void RadSenseComponent::setup() {
   // it does reverse count, but not sensitivity
   // Read in byte order from device (expecting little endian)
   Uint16 old_sensitivity;
-  if (!this->read_bytes(RADSENSE_REGISTER_CONTROL_SENSITIVITY, old_sensitivity.a8, 2)) {
-    ESP_LOGCONFIG(TAG, "RadSense Setup: failed reading sensitivity");
+  if (!this->read_bytes(RADSENS_REGISTER_CONTROL_SENSITIVITY, old_sensitivity.a8, 2)) {
+    ESP_LOGCONFIG(TAG, "RadSens Setup: failed reading sensitivity");
     this->error_code_ = COMMUNICATION_FAILED;
     this->mark_failed();
     return;
   }
   // This number is little endian oddly, convert if needed
   old_sensitivity.u16 = convert_little_endian(old_sensitivity.u16); // No-Op on esp32
-  ESP_LOGCONFIG(TAG, "RadSense setup: sensitivity is %u", old_sensitivity.u16);
+  ESP_LOGCONFIG(TAG, "RadSens setup: sensitivity is %u", old_sensitivity.u16);
   if (this->sensitivity_ != 0 && old_sensitivity.u16 != this->sensitivity_){
-    ESP_LOGCONFIG(TAG, "RadSense setup: sensitivity setting to %u", this->sensitivity_);
+    ESP_LOGCONFIG(TAG, "RadSens setup: sensitivity setting to %u", this->sensitivity_);
     Uint16 sensitivity_to_send;
     sensitivity_to_send.u16 = convert_little_endian(this->sensitivity_);
-    ESP_LOGCONFIG(TAG, "RadSense setup: writing %u %u", sensitivity_to_send.a8[0], sensitivity_to_send.a8[1]);
-    if (!this->write_bytes(RADSENSE_REGISTER_CONTROL_SENSITIVITY, sensitivity_to_send.a8, 2)) {
-      ESP_LOGCONFIG(TAG, "RadSense Setup: failed writing sensitivity");
+    ESP_LOGCONFIG(TAG, "RadSens setup: writing %u %u", sensitivity_to_send.a8[0], sensitivity_to_send.a8[1]);
+    if (!this->write_bytes(RADSENS_REGISTER_CONTROL_SENSITIVITY, sensitivity_to_send.a8, 2)) {
+      ESP_LOGCONFIG(TAG, "RadSens Setup: failed writing sensitivity");
       this->error_code_ = COMMUNICATION_FAILED;
       this->mark_failed();
       return;
     }
   }
 
-  ESP_LOGCONFIG(TAG, "RadSense setup: Complete (firmware version %u)!", this->firmware_version);
+  ESP_LOGCONFIG(TAG, "RadSens setup: Complete (firmware version %u)!", this->firmware_version);
 }
 
-void RadSenseComponent::dump_config() {
-  ESP_LOGCONFIG(TAG, "RadSense:");
+void RadSensComponent::dump_config() {
+  ESP_LOGCONFIG(TAG, "RadSens:");
   LOG_I2C_DEVICE(this);
   if (this->error_code_ == COMMUNICATION_FAILED) {
-    ESP_LOGE(TAG, "Communication with RadSense failed!");
+    ESP_LOGE(TAG, "Communication with RadSens failed!");
   } else if (this->error_code_ == ID_REGISTERS) {
-    ESP_LOGE(TAG, "The ID registers don't match - Is this really a RadSense?");
+    ESP_LOGE(TAG, "The ID registers don't match - Is this really a RadSens?");
   }
   LOG_UPDATE_INTERVAL(this);
 
@@ -114,10 +114,10 @@ void RadSenseComponent::dump_config() {
   LOG_SENSOR("  ", "Counts Per Minute", this->counts_per_minute_sensor_);
 }
 
-float RadSenseComponent::get_setup_priority() const { return setup_priority::DATA; }
-void RadSenseComponent::set_sensitivity(uint16_t sensitivity) { this->sensitivity_ = sensitivity; }
+float RadSensComponent::get_setup_priority() const { return setup_priority::DATA; }
+void RadSensComponent::set_sensitivity(uint16_t sensitivity) { this->sensitivity_ = sensitivity; }
 
-void RadSenseComponent::update() {
+void RadSensComponent::update() {
   // must be zero'd as we write to the last 3 bytes
   // Union allows us to write as bytes then read / write as u32
   Uint32 raw_dynamic_intensity{}, raw_static_intensity{}; 
@@ -132,9 +132,9 @@ void RadSenseComponent::update() {
   // The intensity values are 24bit uints that is why this writes 1 byte into a 32bit uint
   // we also have to fix endien
   uint32_t this_update = millis();
-  if (!this->read_byte_16(RADSENSE_REGISTER_DATA_PULSE_COUNTER, &raw_counts) ||
-      !this->read_bytes(RADSENSE_REGISTER_DATA_DYNAMIC_INTENSITY, &raw_dynamic_intensity.a8[1], 3) ||
-      !this->read_bytes(RADSENSE_REGISTER_DATA_STATIC_INTENSITY, &raw_static_intensity.a8[1], 3)){
+  if (!this->read_byte_16(RADSENS_REGISTER_DATA_PULSE_COUNTER, &raw_counts) ||
+      !this->read_bytes(RADSENS_REGISTER_DATA_DYNAMIC_INTENSITY, &raw_dynamic_intensity.a8[1], 3) ||
+      !this->read_bytes(RADSENS_REGISTER_DATA_STATIC_INTENSITY, &raw_static_intensity.a8[1], 3)){
     this->status_set_warning();
     return;
   }
@@ -163,5 +163,5 @@ void RadSenseComponent::update() {
 
 }
 
-}  // namespace radsense
+}  // namespace radsens
 }  // namespace esphome

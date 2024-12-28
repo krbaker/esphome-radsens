@@ -13,18 +13,18 @@ from .const import (
 DEPENDENCIES = ["i2c"]
 MULTI_CONF = True
 
-CONF_RADSENSE_ID = "radsense_id"
+CONF_RADSENS_ID = "radsens_id"
 
-radsense_ns = cg.esphome_ns.namespace("radsense")
+radsens_ns = cg.esphome_ns.namespace("radsens")
 
-RadSenseComponent = radsense_ns.class_(
-    "RadSenseComponent", cg.PollingComponent, i2c.I2CDevice 
+RadSensComponent = radsens_ns.class_(
+    "RadSensComponent", cg.PollingComponent, i2c.I2CDevice 
 )
 
 CONFIG_SCHEMA = (
     cv.Schema(
         {
-            cv.GenerateID(): cv.declare_id(RadSenseComponent),
+            cv.GenerateID(): cv.declare_id(RadSensComponent),
             cv.Optional(CONF_ADDRESS): cv.i2c_address,
             cv.Optional(CONF_SENSITIVITY, default = 0): cv.uint16_t,
         }

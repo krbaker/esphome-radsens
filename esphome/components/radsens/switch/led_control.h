@@ -1,12 +1,12 @@
 #pragma once
 
 #include "esphome/components/switch/switch.h"
-#include "../radsense.h"
+#include "../radsens.h"
 
 namespace esphome {
-namespace radsense {
+namespace radsens {
 
-class LedControl : public switch_::Switch, public Parented<RadSenseComponent> {
+class LedControl : public switch_::Switch, public Parented<RadSensComponent> {
  public:
   LedControl() = default;
 
@@ -14,5 +14,5 @@ class LedControl : public switch_::Switch, public Parented<RadSenseComponent> {
   void write_state(bool state) override;
 };
 
-}  // namespace radsense
+}  // namespace radsens
 }  // namespace esphome
