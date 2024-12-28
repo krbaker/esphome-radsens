@@ -3,6 +3,12 @@
 #include "esphome/core/application.h"
 #include "esphome/core/datatypes.h"
 #include "esphome/core/helpers.h"
+
+#ifdef USE_SWITCH
+#include "switch/high_voltage_control.h"
+#include "switch/low_power_control.h"
+#include "switch/led_control.h"
+#endif
 namespace esphome {
 namespace radsens {
 
@@ -27,19 +33,38 @@ void RadSensComponent::set_control(uint8_t reg, uint8_t val){
     this->mark_failed();
     return;    
   }
+}
 
+bool RadSensComponent::get_control(uint8_t reg){
+  uint8_t val;
+  if (!this->read_byte(reg, &val)){
+    ESP_LOGCONFIG(TAG, "RadSens Write: failed reading control register %u", reg);
+    this->error_code_ = COMMUNICATION_FAILED;
+    this->mark_failed();
+    return false;    
+  }
+  return val == 1 ? true : false;
 }
 
 void RadSensComponent::set_high_voltage(bool enable){
   set_control(RADSENS_REGISTER_CONTROL_HIGH_VOLTAGE_GENERATOR, enable);
 }
+bool RadSensComponent::get_high_voltage(){
+  return get_control(RADSENS_REGISTER_CONTROL_HIGH_VOLTAGE_GENERATOR);
+}
 
 void RadSensComponent::set_led(bool enable){
   set_control(RADSENS_REGISTER_CONTROL_LED, enable);
 }
+bool RadSensComponent::get_led(){
+  return get_control(RADSENS_REGISTER_CONTROL_LED);
+}
 
 void RadSensComponent::set_low_power(bool enable){
   set_control(RADSENS_REGISTER_CONTROL_LOW_POWER_MODE, enable);
+}
+bool RadSensComponent::get_low_power(){
+  return get_control(RADSENS_REGISTER_CONTROL_LOW_POWER_MODE);
 }
 
 void RadSensComponent::setup() {
@@ -96,6 +121,15 @@ void RadSensComponent::setup() {
     }
   }
 
+#ifdef USE_SWITCH
+  if (this->control_high_voltage_switch_ != nullptr)
+    static_cast<HighVoltageControl*>(this->control_high_voltage_switch_)->setup();
+  if (this->control_led_switch_ != nullptr)
+    static_cast<LedControl*>(this->control_led_switch_)->setup();
+  if (this->control_low_power_switch_ != nullptr)
+    static_cast<LowPowerControl*>(this->control_low_power_switch_)->setup();
+#endif
+
   ESP_LOGCONFIG(TAG, "RadSens setup: Complete (firmware version %u)!", this->firmware_version);
 }
 
@@ -112,6 +146,13 @@ void RadSensComponent::dump_config() {
   LOG_SENSOR("  ", "Dynamic Intensity", this->dynamic_intensity_sensor_);
   LOG_SENSOR("  ", "Static Intensity", this->static_intensity_sensor_);
   LOG_SENSOR("  ", "Counts Per Minute", this->counts_per_minute_sensor_);
+  LOG_SENSOR("  ", "Firmware Version", this->firmware_version_sensor_);
+
+#ifdef USE_SWITCH
+  LOG_SWITCH("  ", "High Voltage Switch", this->control_high_voltage_switch_);
+  LOG_SWITCH("  ", "LED Switch", this->control_led_switch_);
+  LOG_SWITCH("  ", "Low Power Switch", this->control_low_power_switch_);
+#endif
 }
 
 float RadSensComponent::get_setup_priority() const { return setup_priority::DATA; }

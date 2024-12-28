@@ -9,6 +9,7 @@ namespace radsens {
 class LedControl : public switch_::Switch, public Parented<RadSensComponent> {
  public:
   LedControl() = default;
+  void setup();
 
  protected:
   void write_state(bool state) override;
