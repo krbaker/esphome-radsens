@@ -1,0 +1,60 @@
+esphome:
+  name: geiger
+  friendly_name: "Geiger Counter"
+
+esp32:
+  board: wemos_d1_mini32
+  framework:
+    type: ardunio
+
+logger:
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+api:
+  encryption:
+    key: !secret API_KEY
+
+ota:
+  - platform: esphome
+    password: !secret ota_pwd
+
+external_components:
+  - source: github://krbaker/esphome-radsens@v0.1.0
+    components: [ radsens ]
+    refresh: 600s
+
+i2c:
+  - id: bus_a
+    frequency: 400kHz
+
+radsens:
+  sensitivity: 105
+
+sensor:
+  - platform: radsens
+    dynamic_intensity:
+      name: "Dynamic Intensity"
+    static_intensity:
+      name: "Static Intensity"
+    firmware_version:
+      name: "Firmware Version"
+    counts_per_minute:
+      name: "Counts Per Minute"
+
+
+
+switch:
+  - platform: radsens
+    control_led:
+      name: "Impulse LED"
+      restore_mode: RESTORE_DEFAULT_ON
+    control_high_voltage:
+      name: "High Voltage Enable"
+      restore_mode: RESTORE_DEFAULT_ON 
+    control_low_power:
+      name: "Low Power Mode"
+      restore_mode: RESTORE_DEFAULT_OFF
+

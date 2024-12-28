@@ -28,6 +28,8 @@ static const uint8_t RADSENS_REGISTER_CONTROL_LED = 0x14;  // 8bit
 static const uint8_t RADSENS_REGISTER_CONTROL_LOW_POWER_MODE = 0x0C; ///8bit
 
 void RadSensComponent::set_control(uint8_t reg, uint8_t val){
+  // I was expecting to need to read/save the count register here
+  // it does not appear to be needed from experimentation
   if (!this->write_byte(reg, val)){
     ESP_LOGCONFIG(TAG, "RadSens Write: failed writing control register %u", reg);
     this->error_code_ = COMMUNICATION_FAILED;
