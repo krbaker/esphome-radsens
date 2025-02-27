@@ -24,7 +24,7 @@ external_components:
 
 i2c:
   - id: bus_a
-    frequency: 400kHz
+    frequency: 100kHz
 
 radsens:
 
