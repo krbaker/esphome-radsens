@@ -13,12 +13,17 @@ I ordered mine before the war with Ukraine and I don't entirely understand the r
 
 * [tindie carries the RadSens](https://www.tindie.com/products/climateguard/dosimeter-with-i2c-radsens-2-arduino/)
 
+## I2C Errors
+If you are using this and get i2c errors please let me know with a github issue.  It appears to have
+a timing issue.  Setting the switches on startup began failing in esphome 2025.8.0.
+I re-sorted the switch setup which seems like a bit of a hack, but it at least works for me at the moment.  
+
 ## Setup
 ### Simple Example
 
 ``` yaml
 external_components:
-  - source: github://krbaker/esphome-radsens@v1.0.0
+  - source: github://krbaker/esphome-radsens@v1.0.1
     components: [ radsens ]
     refresh: 600s
 
