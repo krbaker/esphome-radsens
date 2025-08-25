@@ -125,12 +125,12 @@ void RadSensComponent::setup() {
   }
 
 #ifdef USE_SWITCH
+  if (this->control_low_power_switch_ != nullptr)
+    static_cast<LowPowerControl*>(this->control_low_power_switch_)->setup();
   if (this->control_high_voltage_switch_ != nullptr)
     static_cast<HighVoltageControl*>(this->control_high_voltage_switch_)->setup();
   if (this->control_led_switch_ != nullptr)
     static_cast<LedControl*>(this->control_led_switch_)->setup();
-  if (this->control_low_power_switch_ != nullptr)
-    static_cast<LowPowerControl*>(this->control_low_power_switch_)->setup();
 #endif
 
   ESP_LOGCONFIG(TAG, "RadSens setup: Complete (firmware version %u)!", this->firmware_version);
